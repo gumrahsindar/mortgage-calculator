@@ -1,0 +1,35 @@
+$line-height-125: 1.25;
+$line-height-150: 1.5;
+$letter-spacing-tight: -0.0625rem;
+$letter-spacing-normal: 0;
+
+// Text utilities
+.text-2xl {
+  font-size: 3.5rem;
+  line-height: $line-height-125;
+  letter-spacing: $letter-spacing-tight;
+}
+
+.text-xl {
+  font-size: 1.5rem;
+  line-height: $line-height-125;
+  letter-spacing: $letter-spacing-tight;
+}
+
+.text-lg {
+  font-size: 1.25rem;
+  line-height: $line-height-125;
+  letter-spacing: $letter-spacing-tight;
+}
+
+.text-md {
+  font-size: 1rem;
+  line-height: $line-height-150;
+  letter-spacing: $letter-spacing-normal;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+  line-height: $line-height-150;
+  letter-spacing: $letter-spacing-normal;
+}
