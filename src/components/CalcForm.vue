@@ -1,15 +1,32 @@
 <script setup lang="ts">
 import calcIcon from '../assets/images/icon-calculator.svg'
+import { useForm } from 'vee-validate'
+import { schema } from '../lib/schemas/form-schema'
+
+const { values, errors, defineField, handleSubmit } = useForm({
+  validationSchema: schema,
+})
+
+const [mortgageAmount, mortgageAmountAttrs] = defineField('mortgageAmount')
+const [mortgageTerm, mortgageTermAttrs] = defineField('mortgageTerm')
+const [interestRate, interestRateAttrs] = defineField('interestRate')
+const [mortgageType, mortgageTypeAttrs] = defineField('mortgageType')
+
+const onSubmit = handleSubmit((values) => {
+  alert(JSON.stringify(values, null, 2))
+})
 </script>
 
 <template>
   <section id="calc-form">
+    <pre>values: {{ values }}</pre>
+    <pre>errors: {{ errors }}</pre>
     <div class="form-header">
       <h1 class="text-xl text-slate-900">Mortgage Calculator</h1>
       <button class="text-md text-slate-700 text-underline">Clear All</button>
     </div>
 
-    <form class="form">
+    <form @submit="onSubmit" class="form">
       <div class="form-line">
         <label class="text-md text-slate-700" for="mortgage-amount"
           >Mortgage Amount</label
@@ -17,12 +34,17 @@ import calcIcon from '../assets/images/icon-calculator.svg'
         <div class="input-wrapper" aria-labelledby="Mortgage amount">
           <div class="input-prefix text-lg text-slate-700">£</div>
           <input
-            class="mortgage-amount text-lg text-slate-900"
             type="number"
+            v-model.trim="mortgageAmount"
+            v-bind="mortgageAmountAttrs"
+            class="mortgage-amount text-lg text-slate-900"
             id="mortgage-amount"
             aria-label="Mortgage amount in pounds"
           />
         </div>
+        <p style="margin-top: 12px" class="text-error text-sm">
+          {{ errors.mortgageAmount }}
+        </p>
       </div>
 
       <div class="form-line">
@@ -32,12 +54,17 @@ import calcIcon from '../assets/images/icon-calculator.svg'
           >
           <div class="input-wrapper">
             <input
+              v-model.trim="mortgageTerm"
+              v-bind="mortgageTermAttrs"
               class="text-lg text-slate-900"
               type="number"
               id="mortgage-term"
             />
             <div class="input-suffix text-lg text-slate-700">years</div>
           </div>
+          <p style="margin-top: 12px" class="text-error text-sm">
+            {{ errors.mortgageAmount }}
+          </p>
         </div>
         <div>
           <label class="text-md text-slate-700" for="interest-rate"
@@ -45,12 +72,17 @@ import calcIcon from '../assets/images/icon-calculator.svg'
           >
           <div class="input-wrapper">
             <input
+              v-model.trim="interestRate"
+              v-bind="interestRateAttrs"
               class="text-lg text-slate-900"
               type="number"
               id="interest-rate"
             />
             <div class="input-suffix text-lg text-slate-700">%</div>
           </div>
+          <p style="margin-top: 12px" class="text-error text-sm">
+            {{ errors.mortgageAmount }}
+          </p>
         </div>
       </div>
 
@@ -60,6 +92,9 @@ import calcIcon from '../assets/images/icon-calculator.svg'
           <div class="mortgage-type">
             <div class="mortgage-type-item">
               <input
+                v-model.trim="mortgageType"
+                v-bind="mortgageTypeAttrs"
+                value="fixed"
                 class="text-lg text-slate-900"
                 type="radio"
                 id="fixed"
@@ -71,6 +106,9 @@ import calcIcon from '../assets/images/icon-calculator.svg'
             </div>
             <div class="mortgage-type-item">
               <input
+                v-model.trim="mortgageType"
+                v-bind="mortgageTypeAttrs"
+                value="interest-only"
                 class="text-lg text-slate-900"
                 type="radio"
                 id="interest-only"
@@ -82,6 +120,9 @@ import calcIcon from '../assets/images/icon-calculator.svg'
             </div>
           </div>
         </fieldset>
+        <p style="margin-top: 12px" class="text-error text-sm">
+          {{ errors.mortgageAmount }}
+        </p>
       </div>
 
       <button class="text-lg text-slate-900">
@@ -113,7 +154,7 @@ import calcIcon from '../assets/images/icon-calculator.svg'
       }
     }
 
-    @media (max-width: 30rem) {
+    @media (max-width: 40rem) {
       flex-direction: column;
       align-items: flex-start;
       gap: 8px;
@@ -129,7 +170,7 @@ import calcIcon from '../assets/images/icon-calculator.svg'
         grid-template-columns: 1fr 1fr;
         gap: 24px;
 
-        @media (max-width: 30rem) {
+        @media (max-width: 40rem) {
           grid-template-columns: 1fr;
         }
       }
@@ -137,7 +178,7 @@ import calcIcon from '../assets/images/icon-calculator.svg'
       &:nth-child(3) {
         margin-bottom: 40px;
 
-        @media (max-width: 30rem) {
+        @media (max-width: 40rem) {
           margin-bottom: 32px;
         }
       }
@@ -174,7 +215,7 @@ import calcIcon from '../assets/images/icon-calculator.svg'
 
       .input-prefix {
         position: absolute;
-        height: 48px;
+        height: 100%;
         border-radius: 4px 0 0 4px;
         padding: 12px 16px;
         background-color: $slate-100;
@@ -186,7 +227,7 @@ import calcIcon from '../assets/images/icon-calculator.svg'
       .input-suffix {
         position: absolute;
         border-radius: 0 4px 4px 0;
-        height: 47px;
+        height: 100%;
         right: 0;
         top: 0;
         padding: 12px 16px 12px 12px;
