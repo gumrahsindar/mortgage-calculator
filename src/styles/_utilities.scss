@@ -1,3 +1,5 @@
+@use './variables' as v;
+
 $line-height-125: 1.25;
 $line-height-150: 1.5;
 $letter-spacing-tight: -0.0625rem;
@@ -6,18 +8,21 @@ $letter-spacing-normal: 0;
 // Text utilities
 .text-2xl {
   font-size: 3.5rem;
+  font-weight: bold;
   line-height: $line-height-125;
   letter-spacing: $letter-spacing-tight;
 }
 
 .text-xl {
   font-size: 1.5rem;
+  font-weight: bold;
   line-height: $line-height-125;
   letter-spacing: $letter-spacing-tight;
 }
 
 .text-lg {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  font-weight: bold;
   line-height: $line-height-125;
   letter-spacing: $letter-spacing-tight;
 }
@@ -32,4 +37,27 @@ $letter-spacing-normal: 0;
   font-size: 0.875rem;
   line-height: $line-height-150;
   letter-spacing: $letter-spacing-normal;
+}
+.text-underline {
+  text-decoration: underline;
+}
+
+// text color utilities
+.text-slate-900 {
+  color: v.$slate-900;
+}
+.text-slate-700 {
+  color: v.$slate-700;
+}
+.text-slate-300 {
+  color: v.$slate-300;
+}
+.text-yellow {
+  color: v.$yellow;
+}
+.text-white {
+  color: v.$white;
+}
+.text-error {
+  color: v.$red;
 }

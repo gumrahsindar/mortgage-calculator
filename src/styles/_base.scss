@@ -40,6 +40,24 @@ select {
   font: inherit;
 }
 
+input,
+label {
+  display: inline-block;
+  width: 100%;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+}
+
 p,
 h1,
 h2,
