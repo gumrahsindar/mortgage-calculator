@@ -1,4 +1,25 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+defineProps({
+  monthlyRepayment: {
+    type: Number,
+    required: true,
+  },
+  totalRepayment: {
+    type: Number,
+    required: true,
+  },
+})
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 2,
+  }).format(value)
+}
+</script>
 
 <template>
   <section class="calc__result">
@@ -10,12 +31,12 @@
     <div class="calc__result__card">
       <p class="calc__result__monthly-label">Your monthly repayments</p>
       <p class="calc__result__monthly-repayments text-yellow text-2xl">
-        £1,797.74
+        {{ formatCurrency(monthlyRepayment) }}
       </p>
       <hr />
       <p class="calc__result__total-label">Total you'll repay over the term</p>
       <p class="calc__result__total-repayments text-white text-xl">
-        £539,322.94
+        {{ formatCurrency(totalRepayment) }}
       </p>
     </div>
   </section>

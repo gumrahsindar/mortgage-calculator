@@ -3,7 +3,9 @@ import calcIcon from '../assets/images/icon-calculator.svg'
 import { useForm } from 'vee-validate'
 import { schema } from '../lib/schemas/form-schema'
 
-const { values, errors, defineField, handleSubmit } = useForm({
+const emit = defineEmits(['calculation'])
+
+const { errors, defineField, handleSubmit, resetForm } = useForm({
   validationSchema: schema,
 })
 
@@ -12,18 +14,56 @@ const [mortgageTerm, mortgageTermAttrs] = defineField('mortgageTerm')
 const [interestRate, interestRateAttrs] = defineField('interestRate')
 const [mortgageType, mortgageTypeAttrs] = defineField('mortgageType')
 
+const calculateRepaymentMortgage = (
+  amount: number,
+  rate: number,
+  term: number
+): number => {
+  const monthlyRate = rate / 100 / 12
+  const numberOfPayments = term * 12
+  return (
+    (amount * (monthlyRate * (1 + monthlyRate) ** numberOfPayments)) /
+    ((1 + monthlyRate) ** numberOfPayments - 1)
+  )
+}
+
+const calculateInterestOnlyMortgage = (
+  amount: number,
+  rate: number
+): number => {
+  const monthlyRate = rate / 100 / 12
+  return amount * monthlyRate
+}
+
 const onSubmit = handleSubmit((values) => {
-  alert(JSON.stringify(values, null, 2))
+  const amount = parseFloat(values.mortgageAmount)
+  const term = parseFloat(values.mortgageTerm)
+  const rate = parseFloat(values.interestRate)
+  let monthlyResult = 0
+  let totalResult = 0
+
+  if (values.mortgageType === 'fixed') {
+    monthlyResult = calculateRepaymentMortgage(amount, rate, term)
+    totalResult = monthlyResult * term * 12
+  } else if (values.mortgageType === 'interest-only') {
+    monthlyResult = calculateInterestOnlyMortgage(amount, rate)
+    totalResult = monthlyResult * term * 12
+  }
+
+  emit('calculation', monthlyResult, totalResult)
 })
 </script>
 
 <template>
   <section id="calc-form">
-    <pre>values: {{ values }}</pre>
-    <pre>errors: {{ errors }}</pre>
     <div class="form-header">
       <h1 class="text-xl text-slate-900">Mortgage Calculator</h1>
-      <button class="text-md text-slate-700 text-underline">Clear All</button>
+      <button
+        @click="() => resetForm()"
+        class="text-md text-slate-700 text-underline"
+      >
+        Clear All
+      </button>
     </div>
 
     <form @submit="onSubmit" class="form">
@@ -51,7 +91,7 @@ const onSubmit = handleSubmit((values) => {
             aria-label="Mortgage amount in pounds"
           />
         </div>
-        <p style="margin-top: 12px" class="text-error text-sm">
+        <p style="margin-top: 4px" class="text-error text-sm">
           {{ errors.mortgageAmount }}
         </p>
       </div>
@@ -79,7 +119,7 @@ const onSubmit = handleSubmit((values) => {
               years
             </div>
           </div>
-          <p style="margin-top: 12px" class="text-error text-sm">
+          <p style="margin-top: 4px" class="text-error text-sm">
             {{ errors.mortgageTerm }}
           </p>
         </div>
@@ -97,6 +137,7 @@ const onSubmit = handleSubmit((values) => {
               class="text-lg text-slate-900"
               type="number"
               id="interest-rate"
+              step="0.01"
             />
             <div
               class="input-suffix text-lg text-slate-700"
@@ -105,7 +146,7 @@ const onSubmit = handleSubmit((values) => {
               %
             </div>
           </div>
-          <p style="margin-top: 12px" class="text-error text-sm">
+          <p style="margin-top: 4px" class="text-error text-sm">
             {{ errors.interestRate }}
           </p>
         </div>
@@ -145,7 +186,7 @@ const onSubmit = handleSubmit((values) => {
             </div>
           </div>
         </fieldset>
-        <p style="margin-top: 12px" class="text-error text-sm">
+        <p style="margin-top: 4px" class="text-error text-sm">
           {{ errors.mortgageType }}
         </p>
       </div>
