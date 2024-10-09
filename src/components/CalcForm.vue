@@ -31,8 +31,17 @@ const onSubmit = handleSubmit((values) => {
         <label class="text-md text-slate-700" for="mortgage-amount"
           >Mortgage Amount</label
         >
-        <div class="input-wrapper" aria-labelledby="Mortgage amount">
-          <div class="input-prefix text-lg text-slate-700">£</div>
+        <div
+          class="input-wrapper"
+          :class="{ 'error-state': errors.mortgageAmount }"
+          aria-labelledby="Mortgage amount"
+        >
+          <div
+            class="input-prefix text-lg text-slate-700"
+            :class="{ 'error-state': errors.mortgageAmount }"
+          >
+            £
+          </div>
           <input
             type="number"
             v-model.trim="mortgageAmount"
@@ -52,7 +61,10 @@ const onSubmit = handleSubmit((values) => {
           <label class="text-md text-slate-700" for="mortgage-term"
             >Mortgage Term</label
           >
-          <div class="input-wrapper">
+          <div
+            class="input-wrapper"
+            :class="{ 'error-state': errors.mortgageTerm }"
+          >
             <input
               v-model.trim="mortgageTerm"
               v-bind="mortgageTermAttrs"
@@ -60,17 +72,25 @@ const onSubmit = handleSubmit((values) => {
               type="number"
               id="mortgage-term"
             />
-            <div class="input-suffix text-lg text-slate-700">years</div>
+            <div
+              class="input-suffix text-lg text-slate-700"
+              :class="{ 'error-state': errors.mortgageTerm }"
+            >
+              years
+            </div>
           </div>
           <p style="margin-top: 12px" class="text-error text-sm">
-            {{ errors.mortgageAmount }}
+            {{ errors.mortgageTerm }}
           </p>
         </div>
         <div>
           <label class="text-md text-slate-700" for="interest-rate"
             >Interest Rate</label
           >
-          <div class="input-wrapper">
+          <div
+            class="input-wrapper"
+            :class="{ 'error-state': errors.interestRate }"
+          >
             <input
               v-model.trim="interestRate"
               v-bind="interestRateAttrs"
@@ -78,10 +98,15 @@ const onSubmit = handleSubmit((values) => {
               type="number"
               id="interest-rate"
             />
-            <div class="input-suffix text-lg text-slate-700">%</div>
+            <div
+              class="input-suffix text-lg text-slate-700"
+              :class="{ 'error-state': errors.interestRate }"
+            >
+              %
+            </div>
           </div>
           <p style="margin-top: 12px" class="text-error text-sm">
-            {{ errors.mortgageAmount }}
+            {{ errors.interestRate }}
           </p>
         </div>
       </div>
@@ -121,7 +146,7 @@ const onSubmit = handleSubmit((values) => {
           </div>
         </fieldset>
         <p style="margin-top: 12px" class="text-error text-sm">
-          {{ errors.mortgageAmount }}
+          {{ errors.mortgageType }}
         </p>
       </div>
 
