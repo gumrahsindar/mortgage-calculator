@@ -3,44 +3,88 @@ import calcIcon from '../assets/images/icon-calculator.svg'
 </script>
 
 <template>
-  <section id="calc__form">
-    <div class="form__header">
-      <h1>Mortgage Calculator</h1>
-      <button>Clear All</button>
+  <section id="calc-form">
+    <div class="form-header">
+      <h1 class="text-xl text-slate-900">Mortgage Calculator</h1>
+      <button class="text-md text-slate-700 text-underline">Clear All</button>
     </div>
 
-    <form>
-      <div class="form__line">
-        <label for="mortgage-amount">Mortgage Amount</label>
-        <div class="input__wrapper">
-          <div class="input__prefix">$</div>
-          <input type="number" id="mortgage-amount" />
+    <form class="form">
+      <div class="form-line">
+        <label class="text-md text-slate-700" for="mortgage-amount"
+          >Mortgage Amount</label
+        >
+        <div class="input-wrapper" aria-labelledby="Mortgage amount">
+          <div class="input-prefix text-lg text-slate-700">£</div>
+          <input
+            class="mortgage-amount text-lg text-slate-900"
+            type="number"
+            id="mortgage-amount"
+            aria-label="Mortgage amount in pounds"
+          />
         </div>
       </div>
-      <div class="form__line">
+
+      <div class="form-line">
         <div>
-          <label for="mortgage-term">Mortgage Term</label>
-          <input type="number" id="mortgage-term" />
-        </div>
-        <div>
-          <label for="interest-rate">Interest Rate</label>
-          <input type="number" id="interest-rate" />
-        </div>
-      </div>
-      <div class="form__line">
-        <fieldset>
-          <legend>Mortgage Type</legend>
-          <div>
-            <input type="radio" id="fixed" name="mortgage-type" />
-            <label for="fixed">Repayment</label>
+          <label class="text-md text-slate-700" for="mortgage-term"
+            >Mortgage Term</label
+          >
+          <div class="input-wrapper">
+            <input
+              class="text-lg text-slate-900"
+              type="number"
+              id="mortgage-term"
+            />
+            <div class="input-suffix text-lg text-slate-700">years</div>
           </div>
-          <div>
-            <input type="radio" id="interest-only" name="mortgage-type" />
-            <label for="interest-only">Interest Only</label>
+        </div>
+        <div>
+          <label class="text-md text-slate-700" for="interest-rate"
+            >Interest Rate</label
+          >
+          <div class="input-wrapper">
+            <input
+              class="text-lg text-slate-900"
+              type="number"
+              id="interest-rate"
+            />
+            <div class="input-suffix text-lg text-slate-700">%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-line">
+        <fieldset>
+          <legend class="text-md text-slate-700">Mortgage Type</legend>
+          <div class="mortgage-type">
+            <div class="mortgage-type-item">
+              <input
+                class="text-lg text-slate-900"
+                type="radio"
+                id="fixed"
+                name="mortgage-type"
+              />
+              <label class="text-lg text-slate-900" for="fixed"
+                >Repayment</label
+              >
+            </div>
+            <div class="mortgage-type-item">
+              <input
+                class="text-lg text-slate-900"
+                type="radio"
+                id="interest-only"
+                name="mortgage-type"
+              />
+              <label class="text-lg text-slate-900" for="interest-only"
+                >Interest Only</label
+              >
+            </div>
           </div>
         </fieldset>
       </div>
-      <button>
+
+      <button class="text-lg text-slate-900">
         <img :src="calcIcon" alt="Calculate" />
         Calculate Repayments
       </button>
@@ -49,7 +93,176 @@ import calcIcon from '../assets/images/icon-calculator.svg'
 </template>
 
 <style lang="scss" scoped>
-#calc__form {
+@use '../styles/variables' as *;
+
+#calc-form {
   padding: 40px;
+
+  .form-header {
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    button {
+      transition: color 0.3s;
+
+      &:hover {
+        color: $slate-900;
+      }
+    }
+
+    @media (max-width: 30rem) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
+
+  .form {
+    .form-line {
+      margin-bottom: 24px;
+
+      &:nth-child(2) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+
+        @media (max-width: 30rem) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      &:nth-child(3) {
+        margin-bottom: 40px;
+
+        @media (max-width: 30rem) {
+          margin-bottom: 32px;
+        }
+      }
+    }
+
+    label,
+    legend {
+      margin-bottom: 12px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      outline: 1px solid $slate-500;
+      border-radius: 4px;
+
+      &:focus-within,
+      &:focus,
+      &:active {
+        outline: 1px solid $yellow;
+      }
+
+      .mortgage-amount {
+        border-radius: 4px;
+        padding-left: 60px;
+      }
+
+      &:focus-within .input-prefix {
+        background-color: $yellow;
+      }
+      &:focus-within .input-suffix {
+        background-color: $yellow;
+      }
+
+      .input-prefix {
+        position: absolute;
+        height: 48px;
+        border-radius: 4px 0 0 4px;
+        padding: 12px 16px;
+        background-color: $slate-100;
+        top: 0;
+        left: 0;
+        transition: background-color 0.3s;
+      }
+
+      .input-suffix {
+        position: absolute;
+        border-radius: 0 4px 4px 0;
+        height: 47px;
+        right: 0;
+        top: 0;
+        padding: 12px 16px 12px 12px;
+        background-color: $slate-100;
+        transition: background-color 0.3s;
+      }
+
+      input {
+        padding: 12.5px 16px;
+        border: none;
+        outline: none;
+      }
+    }
+
+    .mortgage-type {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      &-item {
+        padding: 12.5px 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid $slate-500;
+        border-radius: 4px;
+        &:focus-within,
+        &:focus,
+        &:active {
+          border: 1px solid $yellow;
+          background-color: lighten($color: $yellow, $amount: 40%);
+        }
+
+        input {
+          width: 24px;
+          height: 24px;
+          accent-color: rgb(154, 151, 51);
+          border-radius: 50%;
+          border: none;
+          cursor: pointer;
+
+          &:focus-visible {
+            accent-color: rgb(154, 151, 51);
+            outline: 2px solid $yellow;
+          }
+        }
+
+        label {
+          margin-bottom: 0;
+          cursor: pointer;
+          width: 100%;
+        }
+      }
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 16px 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: $yellow;
+      color: $slate-900;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: lighten($color: $yellow, $amount: 15%);
+      }
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
 }
 </style>
