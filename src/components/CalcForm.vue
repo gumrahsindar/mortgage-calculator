@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import calcIcon from '../assets/images/icon-calculator.svg'
+import InputNumber from './InputNumber.vue'
+import FormButton from './FormButton.vue'
 import { useForm } from 'vee-validate'
-import { schema } from '../lib/schemas/form-schema'
+import { FormSchema, schema } from '../lib/schemas/form-schema'
+import {
+  calculateInterestOnlyMortgage,
+  calculateRepaymentMortgage,
+} from '../lib/calculations'
+import MortgageTypeItem from './MortgageTypeItem.vue'
+import FormError from './FormError.vue'
 
-const emit = defineEmits(['calculation'])
+// emits & props
+const emit = defineEmits(['calculation', 'toggle-result'])
 
-const { errors, defineField, handleSubmit, resetForm } = useForm({
+// form setup
+const { errors, defineField, handleSubmit, resetForm } = useForm<FormSchema>({
   validationSchema: schema,
 })
 
@@ -14,141 +23,85 @@ const [mortgageTerm, mortgageTermAttrs] = defineField('mortgageTerm')
 const [interestRate, interestRateAttrs] = defineField('interestRate')
 const [mortgageType, mortgageTypeAttrs] = defineField('mortgageType')
 
-const calculateRepaymentMortgage = (
-  amount: number,
-  rate: number,
-  term: number
-): number => {
-  const monthlyRate = rate / 100 / 12
-  const numberOfPayments = term * 12
-  return (
-    (amount * (monthlyRate * (1 + monthlyRate) ** numberOfPayments)) /
-    ((1 + monthlyRate) ** numberOfPayments - 1)
-  )
-}
-
-const calculateInterestOnlyMortgage = (
-  amount: number,
-  rate: number
-): number => {
-  const monthlyRate = rate / 100 / 12
-  return amount * monthlyRate
-}
-
-const onSubmit = handleSubmit((values) => {
-  const amount = parseFloat(values.mortgageAmount)
-  const term = parseFloat(values.mortgageTerm)
-  const rate = parseFloat(values.interestRate)
+// form submission
+const onSubmit = handleSubmit((values: FormSchema) => {
+  const amount = values.mortgageAmount
+  const term = values.mortgageTerm
+  const rate = values.interestRate.toFixed(2)
   let monthlyResult = 0
   let totalResult = 0
 
   if (values.mortgageType === 'fixed') {
-    monthlyResult = calculateRepaymentMortgage(amount, rate, term)
+    monthlyResult = calculateRepaymentMortgage(amount, +rate, term)
     totalResult = monthlyResult * term * 12
   } else if (values.mortgageType === 'interest-only') {
-    monthlyResult = calculateInterestOnlyMortgage(amount, rate)
+    monthlyResult = calculateInterestOnlyMortgage(amount, +rate)
     totalResult = monthlyResult * term * 12
   }
 
   emit('calculation', monthlyResult, totalResult)
+  emit('toggle-result', true)
 })
+
+// clear form
+const reset = () => {
+  resetForm()
+  emit('toggle-result', false)
+}
 </script>
 
 <template>
   <section id="calc-form">
     <div class="form-header">
       <h1 class="text-xl text-slate-900">Mortgage Calculator</h1>
-      <button
-        @click="() => resetForm()"
-        class="text-md text-slate-700 text-underline"
-      >
+      <button @click.stop="reset" class="text-md text-slate-700 text-underline">
         Clear All
       </button>
     </div>
 
     <form @submit="onSubmit" class="form">
       <div class="form-line">
-        <label class="text-md text-slate-700" for="mortgage-amount"
-          >Mortgage Amount</label
-        >
-        <div
-          class="input-wrapper"
-          :class="{ 'error-state': errors.mortgageAmount }"
-          aria-labelledby="Mortgage amount"
-        >
-          <div
-            class="input-prefix text-lg text-slate-700"
-            :class="{ 'error-state': errors.mortgageAmount }"
-          >
-            £
-          </div>
-          <input
-            type="number"
-            v-model.trim="mortgageAmount"
-            v-bind="mortgageAmountAttrs"
-            class="mortgage-amount text-lg text-slate-900"
-            id="mortgage-amount"
-            aria-label="Mortgage amount in pounds"
-          />
-        </div>
-        <p style="margin-top: 4px" class="text-error text-sm">
-          {{ errors.mortgageAmount }}
-        </p>
+        <InputNumber
+          class="mortgage-amount"
+          v-model.trim="mortgageAmount"
+          v-bind="mortgageAmountAttrs"
+          :errors="errors.mortgageAmount"
+          prefix="£"
+          ariaLabelledby="mortgage-amount"
+          inputId="mortgage-amount"
+          inputFor="mortgage-amount"
+          label="Mortgage Amount"
+        />
+        <FormError :error="errors.mortgageAmount" />
       </div>
 
       <div class="form-line">
         <div>
-          <label class="text-md text-slate-700" for="mortgage-term"
-            >Mortgage Term</label
-          >
-          <div
-            class="input-wrapper"
-            :class="{ 'error-state': errors.mortgageTerm }"
-          >
-            <input
-              v-model.trim="mortgageTerm"
-              v-bind="mortgageTermAttrs"
-              class="text-lg text-slate-900"
-              type="number"
-              id="mortgage-term"
-            />
-            <div
-              class="input-suffix text-lg text-slate-700"
-              :class="{ 'error-state': errors.mortgageTerm }"
-            >
-              years
-            </div>
-          </div>
-          <p style="margin-top: 4px" class="text-error text-sm">
-            {{ errors.mortgageTerm }}
-          </p>
+          <InputNumber
+            v-model.trim="mortgageTerm"
+            v-bind="mortgageTermAttrs"
+            :errors="errors.mortgageTerm"
+            suffix="years"
+            ariaLabelledby="mortgage-term"
+            inputId="mortgage-term"
+            inputFor="mortgage-term"
+            label="Mortgage Term"
+          />
+          <FormError :error="errors.mortgageTerm" />
         </div>
         <div>
-          <label class="text-md text-slate-700" for="interest-rate"
-            >Interest Rate</label
-          >
-          <div
-            class="input-wrapper"
-            :class="{ 'error-state': errors.interestRate }"
-          >
-            <input
-              v-model.trim="interestRate"
-              v-bind="interestRateAttrs"
-              class="text-lg text-slate-900"
-              type="number"
-              id="interest-rate"
-              step="0.01"
-            />
-            <div
-              class="input-suffix text-lg text-slate-700"
-              :class="{ 'error-state': errors.interestRate }"
-            >
-              %
-            </div>
-          </div>
-          <p style="margin-top: 4px" class="text-error text-sm">
-            {{ errors.interestRate }}
-          </p>
+          <InputNumber
+            v-model.trim="interestRate"
+            v-bind="interestRateAttrs"
+            :errors="errors.interestRate"
+            suffix="%"
+            ariaLabelledby="interest-rate"
+            inputId="interest-rate"
+            inputFor="interest-rate"
+            label="Interest Rate"
+            step="0.01"
+          />
+          <FormError :error="errors.interestRate" />
         </div>
       </div>
 
@@ -156,45 +109,28 @@ const onSubmit = handleSubmit((values) => {
         <fieldset>
           <legend class="text-md text-slate-700">Mortgage Type</legend>
           <div class="mortgage-type">
-            <div class="mortgage-type-item">
-              <input
-                v-model.trim="mortgageType"
-                v-bind="mortgageTypeAttrs"
-                value="fixed"
-                class="text-lg text-slate-900"
-                type="radio"
-                id="fixed"
-                name="mortgage-type"
-              />
-              <label class="text-lg text-slate-900" for="fixed"
-                >Repayment</label
-              >
-            </div>
-            <div class="mortgage-type-item">
-              <input
-                v-model.trim="mortgageType"
-                v-bind="mortgageTypeAttrs"
-                value="interest-only"
-                class="text-lg text-slate-900"
-                type="radio"
-                id="interest-only"
-                name="mortgage-type"
-              />
-              <label class="text-lg text-slate-900" for="interest-only"
-                >Interest Only</label
-              >
-            </div>
+            <MortgageTypeItem
+              v-model="mortgageType"
+              v-bind="mortgageTypeAttrs"
+              value="fixed"
+              label="Repayment"
+              radioId="fixed"
+              radioFor="fixed"
+            />
+            <MortgageTypeItem
+              v-model="mortgageType"
+              v-bind="mortgageTypeAttrs"
+              value="interest-only"
+              label="Interest Only"
+              radioId="interest-only"
+              radioFor="interest-only"
+            />
           </div>
         </fieldset>
-        <p style="margin-top: 4px" class="text-error text-sm">
-          {{ errors.mortgageType }}
-        </p>
+        <FormError :error="errors.mortgageType" />
       </div>
 
-      <button class="text-lg text-slate-900">
-        <img :src="calcIcon" alt="Calculate" />
-        Calculate Repayments
-      </button>
+      <FormButton />
     </form>
   </section>
 </template>
@@ -250,125 +186,15 @@ const onSubmit = handleSubmit((values) => {
       }
     }
 
-    label,
-    legend {
+    :global(label),
+    :global(legend) {
       margin-bottom: 12px;
-    }
-
-    .input-wrapper {
-      position: relative;
-      display: flex;
-      outline: 1px solid $slate-500;
-      border-radius: 4px;
-
-      &:focus-within,
-      &:focus,
-      &:active {
-        outline: 1px solid $yellow;
-      }
-
-      .mortgage-amount {
-        border-radius: 4px;
-        padding-left: 60px;
-      }
-
-      &:focus-within .input-prefix {
-        background-color: $yellow;
-      }
-      &:focus-within .input-suffix {
-        background-color: $yellow;
-      }
-
-      .input-prefix {
-        position: absolute;
-        height: 100%;
-        border-radius: 4px 0 0 4px;
-        padding: 12px 16px;
-        background-color: $slate-100;
-        top: 0;
-        left: 0;
-        transition: background-color 0.3s;
-      }
-
-      .input-suffix {
-        position: absolute;
-        border-radius: 0 4px 4px 0;
-        height: 100%;
-        right: 0;
-        top: 0;
-        padding: 12px 16px 12px 12px;
-        background-color: $slate-100;
-        transition: background-color 0.3s;
-      }
-
-      input {
-        padding: 12.5px 16px;
-        border: none;
-        outline: none;
-      }
     }
 
     .mortgage-type {
       display: flex;
       flex-direction: column;
       gap: 12px;
-
-      &-item {
-        padding: 12.5px 16px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        border: 1px solid $slate-500;
-        border-radius: 4px;
-        &:focus-within,
-        &:focus,
-        &:active {
-          border: 1px solid $yellow;
-          background-color: lighten($color: $yellow, $amount: 40%);
-        }
-
-        input {
-          width: 24px;
-          height: 24px;
-          accent-color: rgb(154, 151, 51);
-          border-radius: 50%;
-          border: none;
-          cursor: pointer;
-
-          &:focus-visible {
-            accent-color: rgb(154, 151, 51);
-            outline: 2px solid $yellow;
-          }
-        }
-
-        label {
-          margin-bottom: 0;
-          cursor: pointer;
-          width: 100%;
-        }
-      }
-    }
-
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 16px 40px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background-color: $yellow;
-      color: $slate-900;
-      cursor: pointer;
-      transition: background-color 0.3s;
-
-      &:hover {
-        background-color: lighten($color: $yellow, $amount: 15%);
-      }
-
-      img {
-        width: 24px;
-        height: 24px;
-      }
     }
   }
 }

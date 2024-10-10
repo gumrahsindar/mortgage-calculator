@@ -22,24 +22,22 @@ const formatCurrency = (value: number) => {
 </script>
 
 <template>
-  <section class="calc__result">
-    <h2 class="calc__result__heading text-xl text-white">Your results</h2>
-    <p class="calc__result__desc text-md text-slate-300">
-      Your results are shown below based on the information you provided. To
-      adjust the results, edit the form and click “calculate repayments” again.
+  <h2 class="calc__result__heading text-xl text-white">Your results</h2>
+  <p class="calc__result__desc text-md text-slate-300">
+    Your results are shown below based on the information you provided. To
+    adjust the results, edit the form and click “calculate repayments” again.
+  </p>
+  <div class="calc__result__card">
+    <p class="calc__result__monthly-label">Your monthly repayments</p>
+    <p class="calc__result__monthly-repayments text-yellow text-2xl">
+      {{ formatCurrency(monthlyRepayment) }}
     </p>
-    <div class="calc__result__card">
-      <p class="calc__result__monthly-label">Your monthly repayments</p>
-      <p class="calc__result__monthly-repayments text-yellow text-2xl">
-        {{ formatCurrency(monthlyRepayment) }}
-      </p>
-      <hr />
-      <p class="calc__result__total-label">Total you'll repay over the term</p>
-      <p class="calc__result__total-repayments text-white text-xl">
-        {{ formatCurrency(totalRepayment) }}
-      </p>
-    </div>
-  </section>
+    <hr />
+    <p class="calc__result__total-label">Total you'll repay over the term</p>
+    <p class="calc__result__total-repayments text-white text-xl">
+      {{ formatCurrency(totalRepayment) }}
+    </p>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -47,18 +45,6 @@ const formatCurrency = (value: number) => {
 @use '../styles/utilities' as *;
 
 .calc__result {
-  padding: 40px;
-  background-color: $slate-900;
-  border-radius: 0 24px 24px 75px;
-
-  @media (max-width: 64rem) {
-    border-radius: 0 0 24px 24px;
-  }
-
-  @media (max-width: 40rem) {
-    border-radius: 0;
-  }
-
   h2 {
     margin-bottom: 16px;
   }
