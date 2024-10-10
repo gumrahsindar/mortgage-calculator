@@ -2,9 +2,12 @@
 import { ref } from 'vue'
 import CalcForm from './components/CalcForm.vue'
 import CalcResult from './components/CalcResult.vue'
+import EmptyResult from './components/EmptyResult.vue'
+import CalcResultLayout from './components/CalcResultLayout.vue'
 
 const monthlyRepayment = ref(0)
 const totalRepayment = ref(0)
+const isResultExist = ref(false)
 
 const handleCalculation = (monthly: number, total: number) => {
   monthlyRepayment.value = monthly
@@ -13,11 +16,18 @@ const handleCalculation = (monthly: number, total: number) => {
 </script>
 
 <template>
-  <CalcForm @calculation="handleCalculation" />
-  <CalcResult
-    :monthlyRepayment="monthlyRepayment"
-    :totalRepayment="totalRepayment"
+  <CalcForm
+    @toggle-result="(val: boolean) => (isResultExist = val)"
+    @calculation="handleCalculation"
   />
+  <CalcResultLayout>
+    <CalcResult
+      v-if="isResultExist"
+      :monthlyRepayment="monthlyRepayment"
+      :totalRepayment="totalRepayment"
+    />
+    <EmptyResult v-if="!isResultExist" />
+  </CalcResultLayout>
 </template>
 
 <style lang="scss">
