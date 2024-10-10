@@ -17,7 +17,7 @@ defineProps<{
 <template>
   <div>
     <label class="text-md text-slate-700" :for="inputFor">{{ label }}</label>
-    <div class="input-wrapper" :class="{ 'error-state': errors }" :id="inputId">
+    <div class="input-wrapper" :class="{ 'error-state': errors }">
       <div v-if="prefix" class="input-prefix text-lg text-slate-700">
         {{ prefix }}
       </div>
