@@ -5,7 +5,7 @@ defineProps<{
   errors: string | undefined
   prefix?: string
   suffix?: string
-  ariaLabelledby: string
+  ariaLabel: string
   inputId: string
   label: string
   inputFor: string
@@ -17,12 +17,7 @@ defineProps<{
 <template>
   <div>
     <label class="text-md text-slate-700" :for="inputFor">{{ label }}</label>
-    <div
-      class="input-wrapper"
-      :class="{ 'error-state': errors }"
-      :aria-labelledby="ariaLabelledby"
-      :id="inputId"
-    >
+    <div class="input-wrapper" :class="{ 'error-state': errors }" :id="inputId">
       <div v-if="prefix" class="input-prefix text-lg text-slate-700">
         {{ prefix }}
       </div>
@@ -32,8 +27,8 @@ defineProps<{
         type="number"
         @blur="$emit('blur')"
         class="text-lg text-slate-900"
-        id="mortgage-amount"
-        aria-label="Mortgage amount in pounds"
+        :id="inputId"
+        :aria-label="ariaLabel"
         :step="step"
       />
       <div v-if="suffix" class="input-suffix text-lg text-slate-700">
